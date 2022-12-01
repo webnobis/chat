@@ -1,9 +1,8 @@
 package com.webnobis.chat;
 
 import com.webnobis.chat.model.ConfigCli;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
-import io.vertx.core.Launcher;
+import com.webnobis.chat.server.ChatServer;
+import io.vertx.core.*;
 import io.vertx.core.cli.CLI;
 import io.vertx.core.cli.annotations.CLIConfigurator;
 import io.vertx.core.json.JsonObject;
@@ -17,57 +16,79 @@ import java.util.Arrays;
  *
  * @author steffen
  */
-public class Chat extends Launcher {
-
-    static Handler<String[]> launchHandler = new Chat()::dispatch;
-
-    private final ConfigCli configCli = new ConfigCli();
+public class Chat extends AbstractVerticle {
 
     /**
-     * Evaluates the argument options of chat configuration and launch the chat starter
-     *
-     * @param args argument options
-     * @see ConfigCli
-     * @see Launcher#dispatch(String[])
-     */
-    @Override
-    public void dispatch(String[] args) {
-        CLI cli = CLI.create(ConfigCli.class);
-        CLIConfigurator.inject(cli.parse(Arrays.asList(args)), configCli);
-        super.dispatch(args);
-    }
-
-    /**
-     * Gets the chat starter name
-     *
-     * @return chat starter name
-     * @see ChatStarter
-     */
-    @Override
-    protected String getMainVerticle() {
-        return ChatStarter.class.getName();
-    }
-
-    /**
-     * Adds the evaluated chat configuration to the config json
-     *
-     * @param deploymentOptions deployment options
-     * @see DeploymentOptions#setConfig(JsonObject)
-     */
-    @Override
-    public void beforeDeployingVerticle(DeploymentOptions deploymentOptions) {
-        deploymentOptions.setConfig(configCli.toJson().mergeIn(deploymentOptions.getConfig()));
-    }
-
-    /**
-     * Launch the chat starter with the over-given commandline argument options
+     * Launch the chat with the over-given commandline argument options
      *
      * @param args commandline argument options
-     * @see #dispatch(String[])
-     * @see #getMainVerticle()
+     * @see Launcher#dispatch(String[])
+     * @see ConfigCli#toJson()
+     * @see DeploymentOptions#setConfig(JsonObject)
      */
     public static void main(String[] args) {
-        launchHandler.handle(args);
+        new ChatLauncher().dispatch(args);
+    }
+
+    /**
+     * Reads the chat config and starts the chat server
+     *
+     * @param startPromise start promise
+     * @see Context#config()
+     * @see ConfigCli#fromJson(JsonObject)
+     * @see ChatServer#ChatServer(int, String, String)
+     */
+    @Override
+    public void start(Promise<Void> startPromise) {
+        ConfigCli configCli = ConfigCli.fromJson(context.config());
+        vertx.deployVerticle(new ChatServer(configCli.getPort(), configCli.getRegisterPath(), configCli.getChatPath()))
+                .<Void>mapEmpty().onComplete(startPromise);
+    }
+
+    /**
+     * With chat configuration extended launcher
+     *
+     * @author steffen
+     */
+    private static class ChatLauncher extends Launcher {
+
+        private final ConfigCli configCli = new ConfigCli();
+
+        /**
+         * Evaluates the argument options of chat configuration and launch the chat
+         *
+         * @param args argument options
+         * @see ConfigCli
+         * @see Launcher#dispatch(String[])
+         */
+        @Override
+        public void dispatch(String[] args) {
+            CLI cli = CLI.create(ConfigCli.class);
+            CLIConfigurator.inject(cli.parse(Arrays.asList(args)), configCli);
+            super.dispatch(args);
+        }
+
+        /**
+         * Gets the Chat class name
+         *
+         * @return Chat class name
+         * @see Class#getName()
+         */
+        @Override
+        protected String getMainVerticle() {
+            return Chat.class.getName();
+        }
+
+        /**
+         * Adds the evaluated chat configuration to the config json
+         *
+         * @param deploymentOptions deployment options
+         * @see DeploymentOptions#setConfig(JsonObject)
+         */
+        @Override
+        public void beforeDeployingVerticle(DeploymentOptions deploymentOptions) {
+            deploymentOptions.setConfig(configCli.toJson().mergeIn(deploymentOptions.getConfig()));
+        }
     }
 
 }

@@ -96,6 +96,12 @@
             <version>2.17.2</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.14.1</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -195,26 +201,18 @@
                 </executions>
             </plugin-->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M7</version>
                 <configuration>
                     <argLine>--add-opens
                         ${project.module}/${project.module}=ALL-UNNAMED
                         --add-opens
-                        ${project.module}/${project.module}.config=ALL-UNNAMED
-                        --add-opens
-                        ${project.module}/${project.module}.export=ALL-UNNAMED
+                        ${project.module}/${project.module}.client=ALL-UNNAMED
                         --add-opens
                         ${project.module}/${project.module}.model=ALL-UNNAMED
                         --add-opens
-                        ${project.module}/${project.module}.persistence=ALL-UNNAMED
-                        --add-opens
-                        ${project.module}/${project.module}.service=ALL-UNNAMED
-                        --add-opens ${project.module}/${project.module}.view=ALL-UNNAMED
-                        --add-opens
-                        ${project.module}/${project.module}.view.entry=ALL-UNNAMED
-                        --add-opens
-                        ${project.module}/${project.module}.view.items=ALL-UNNAMED
+                        ${project.module}/${project.module}.server=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
