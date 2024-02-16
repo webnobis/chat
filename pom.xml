@@ -14,7 +14,7 @@
         <project.main.class>com.webnobis.chat.Chat</project.main.class>
         <project.author>Steffen Nobis</project.author>
         <java.fx.version>23-ea+3</java.fx.version>
-        <vertx.version>4.4.5</vertx.version>
+        <vertx.version>4.5.3</vertx.version>
         <junit.version>5.10.2</junit.version>
     </properties>
 
