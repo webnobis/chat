@@ -13,7 +13,7 @@
         <project.module>com.webnobis.chat</project.module>
         <project.main.class>com.webnobis.chat.Chat</project.main.class>
         <project.author>Steffen Nobis</project.author>
-        <java.fx.version>23-ea+3</java.fx.version>
+        <java.fx.version>23-ea+27</java.fx.version>
         <vertx.version>4.5.3</vertx.version>
         <junit.version>5.11.0</junit.version>
     </properties>
