@@ -15,7 +15,7 @@
         <project.author>Steffen Nobis</project.author>
         <java.fx.version>24.0.2-ea+1</java.fx.version>
         <vertx.version>4.5.22</vertx.version>
-        <junit.version>5.11.0</junit.version>
+        <junit.version>6.0.3</junit.version>
     </properties>
 
     <developers>
